@@ -38,7 +38,7 @@ export const ProductProvider = ({ children }: PropsWithChildren) => {
     setLoading(true);
     setError(null);
     try {
-      let url = `http://localhost:3000/products`;
+      let url = `https://zayedserver-332321552cf3.herokuapp.com/products`;
       const params: string[] = [];
       if (page) params.push(`page=${page}`);
       if (category) params.push(`category=${encodeURIComponent(category)}`);
@@ -63,7 +63,7 @@ export const ProductProvider = ({ children }: PropsWithChildren) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:3000/products/search?q=${encodeURIComponent(query)}`);
+      const res = await fetch(`https://zayedserver-332321552cf3.herokuapp.com/products/search?q=${encodeURIComponent(query)}`);
       if (!res.ok) throw new Error('Search failed');
       const data: Product[] = await res.json();
       setProducts(data);

@@ -28,7 +28,7 @@ export const ReviewProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:3000/products/${productId}/reviews`);
+      const res = await fetch(`https://zayedserver-332321552cf3.herokuapp.com/products/${productId}/reviews`);
       if (!res.ok) throw new Error('Failed to fetch reviews');
       setReviews(await res.json());
     } catch (err: any) {
@@ -41,7 +41,7 @@ export const ReviewProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:3000/products/${productId}/reviews`, {
+      const res = await fetch(`https://zayedserver-332321552cf3.herokuapp.com/products/${productId}/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(review),
@@ -58,7 +58,7 @@ export const ReviewProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:3000/products/${productId}/reviews/${id}`, {
+      const res = await fetch(`https://zayedserver-332321552cf3.herokuapp.com/products/${productId}/reviews/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(review),
@@ -75,7 +75,7 @@ export const ReviewProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:3000/products/${productId}/reviews/${id}`, { method: 'DELETE' });
+      const res = await fetch(`https://zayedserver-332321552cf3.herokuapp.com/products/${productId}/reviews/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete review');
       await fetchReviews(productId);
     } catch (err: any) {
