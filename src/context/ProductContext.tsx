@@ -1,12 +1,22 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
+
+import type { PropsWithChildren } from 'react';
+
+
 import type { Product } from '../types/types';
 
 interface ProductContextType {
   products: Product[];
   loading: boolean;
   error: string | null;
-  fetchProducts: (page?: number, category?: string) => void;
-  searchProducts: (query: string) => void;
+  fetchProducts: (page?: number, category?: string) => Promise<void>;
+  searchProducts: (query: string) => Promise<void>;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -17,42 +27,51 @@ export const useProductContext = () => {
   return ctx;
 };
 
-export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ProductProvider = ({ children }: PropsWithChildren) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProducts = useCallback(async (page = 1, category = '') => {
+  // Added return type Promise<void> for fetchProducts and searchProducts
+  const fetchProducts = useCallback(
+  async (page?: number, category?: string): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
       let url = `http://localhost:3000/products`;
-      debugger;
-      if (category) url += `/?category=${category}`;
+      const params: string[] = [];
+      if (page) params.push(`page=${page}`);
+      if (category) params.push(`category=${encodeURIComponent(category)}`);
+      if (params.length) url += `?${params.join('&')}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch products');
-      let data = await res.json()
-      if (category){
-      data = data.filter(d => d.category == category)
-    }
+      const data: Product[] = await res.json();
       setProducts(data);
-    } catch (err: any) {
-      setError(err.message);
-    }
-    setLoading(false);
-  }, []);
+  } catch (err: unknown) {
+  if (err instanceof Error) {
+    setError(err.message);
+  } else {
+    setError(String(err));
+  }
+}
+  },
+  []
+);
 
-  const searchProducts = useCallback(async (query: string) => {
+
+  const searchProducts = useCallback(async (query: string): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch(`http://localhost:3000/products/search?q=${encodeURIComponent(query)}`);
       if (!res.ok) throw new Error('Search failed');
-      setProducts(await res.json());
+      const data: Product[] = await res.json();
+      setProducts(data);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message ?? String(err));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
